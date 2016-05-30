@@ -1,4 +1,4 @@
-{-# LANGUAGE CPP, DeriveDataTypeable #-}
+{-# LANGUAGE CPP, DeriveDataTypeable, TypeSynonymInstances, FlexibleInstances #-}
 
 #if __GLASGOW_HASKELL__ >= 704
 {-# LANGUAGE Unsafe #-}
@@ -31,7 +31,6 @@ module Data.Unicode.NormalizationInsensitive.Internal ( NI
 
 -- from base:
 import Data.Bool     ( (||) )
-import Data.Char     ( Char, toLower )
 import Data.Eq       ( Eq, (==) )
 import Data.Function ( on )
 import Data.Monoid   ( Monoid, mempty, mappend )
@@ -39,12 +38,9 @@ import Data.Ord      ( Ord, compare )
 import Data.String   ( IsString, fromString )
 import Data.Data     ( Data )
 import Data.Typeable ( Typeable )
-import Data.Word     ( Word8 )
-import Prelude       ( (.), fmap, (&&), (+), (<=), otherwise )
+import Prelude       ( String, (.), fmap, (&&), (+), (<=), otherwise )
 import Text.Read     ( Read, readPrec )
 import Text.Show     ( Show, showsPrec )
-
-import qualified Data.List as L ( map )
 
 #if __GLASGOW_HASKELL__ < 700
 import Control.Monad ( (>>) )
@@ -52,12 +48,12 @@ import Prelude       ( fromInteger )
 #endif
 
 -- from bytestring:
-import qualified Data.ByteString      as B  ( ByteString, map )
-import qualified Data.ByteString.Lazy as BL ( ByteString, map )
+import qualified Data.ByteString      as B  ( ByteString )
+import qualified Data.ByteString.Lazy as BL ( ByteString, fromStrict, toStrict )
 
 -- from text:
-import qualified Data.Text      as T  ( Text, toCaseFold )
-import qualified Data.Text.Lazy as TL ( Text, toCaseFold, pack, unpack )
+import qualified Data.Text      as T  ( Text, pack, unpack )
+import qualified Data.Text.Lazy as TL ( Text, fromStrict, toStrict )
 
 -- from deepseq:
 import Control.DeepSeq ( NFData, rnf, deepseq )
@@ -65,12 +61,16 @@ import Control.DeepSeq ( NFData, rnf, deepseq )
 -- from hashable:
 import Data.Hashable ( Hashable, hashWithSalt )
 
+-- from unicode-transforms:
+import qualified Data.ByteString.UTF8.Normalize as B ( normalize )
+import qualified Data.Text.Normalize            as T ( normalize )
+import Data.Unicode.Normalize                   ( NormalizationMode(NFKD) )
 
 --------------------------------------------------------------------------------
 -- Normalization Insensitive Strings
 --------------------------------------------------------------------------------
 
-{-| A @NI s@ provides /C/ase /I/nsensitive comparison for the string-like type
+{-| A @NI s@ provides /N/ormalization /I/nsensitive comparison for the string-like type
 @s@ (for example: 'String', 'T.Text', 'B.ByteString', etc.).
 
 Note that @NI s@ has an instance for 'IsString' which together with the
@@ -135,50 +135,28 @@ instance NFData s => NFData (NI s) where
 -- Normalization
 --------------------------------------------------------------------------------
 
+mode = NFKD
+
 -- | Class of string-like types that support normalization.
 class Normalizable s where
     normalize :: s -> s
 
-    normalizeList :: [s] -> [s]
-    normalizeList = L.map normalize
+-- | Note that @normalize@ on @'B.ByteString's@ assumes UTF-8 encoded strings!
+instance Normalizable B.ByteString where
+    normalize = B.normalize mode
 
-instance Normalizable a => Normalizable [a] where
-    normalize = normalizeList
+-- | Note that @normalize@ on @'BL.ByteString's@ assumes UTF-8 encoded strings!
+instance Normalizable BL.ByteString where
+    normalize = BL.fromStrict . B.normalize mode . BL.toStrict
 
--- | Note that @normalize@ on @'B.ByteString's@ is only guaranteed to be correct for ISO-8859-1 encoded strings!
-instance Normalizable B.ByteString where normalize = B.map toLower8
+instance Normalizable String where
+    normalize = T.unpack . T.normalize mode . T.pack
 
--- | Note that @normalize@ on @'BL.ByteString's@ is only guaranteed to be correct for ISO-8859-1 encoded strings!
-instance Normalizable BL.ByteString where normalize = BL.map toLower8
+instance Normalizable T.Text where
+    normalize = T.normalize mode
 
-instance Normalizable Char where
-    normalize     = toLower
-    normalizeList = TL.unpack . TL.toCaseFold . TL.pack
+instance Normalizable TL.Text where
+    normalize = TL.fromStrict . T.normalize mode . TL.toStrict
 
-instance Normalizable T.Text  where normalize = T.toCaseFold
-instance Normalizable TL.Text where normalize = TL.toCaseFold
-instance Normalizable (NI s)  where normalize (NI _ l) = NI l l
-
-{-# INLINE toLower8 #-}
-toLower8 :: Word8 -> Word8
-toLower8 w
-  |  65 <= w && w <=  90 ||
-    192 <= w && w <= 214 ||
-    216 <= w && w <= 222 = w + 32
-  | otherwise            = w
-
---------------------------------------------------------------------------------
--- Rewrite RULES
---------------------------------------------------------------------------------
-
-{-# RULES "normalize/ByteString" normalize = normalizeBS #-}
-
-normalizeBS :: B.ByteString -> B.ByteString
-normalizeBS bs = B.map toLower8' bs
-    where
-      toLower8' :: Word8 -> Word8
-      toLower8' w
-          |  65  <= w && w <=  90 ||
-             192 <= w && w <= 214 ||
-             216 <= w && w <= 222 = w + 32
-          | otherwise             = w
+instance Normalizable (NI s) where
+    normalize (NI _ l) = NI l l
