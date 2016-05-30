@@ -1,82 +1,72 @@
 module Main ( main ) where
 
 import           Data.ByteString                    ( ByteString )
-import qualified Data.ByteString.Char8      as BC8  ( pack, map )
 import qualified Data.ByteString.Lazy       as Lazy ( ByteString )
-import qualified Data.ByteString.Lazy.Char8 as BLC8 ( pack, map )
-import qualified Data.CaseInsensitive       as CI   ( mk )
-import           Data.Char                          ( toUpper, chr )
+import           Data.Hashable                      ( hash )
 import           Data.Text                          ( Text )
-import qualified Data.Text                  as T    ( pack, toUpper )
+import qualified Data.Text                  as T    ( pack )
+import qualified Data.Text.Encoding         as T    ( encodeUtf8 )
 import qualified Data.Text.Lazy             as Lazy ( Text )
-import qualified Data.Text.Lazy             as TL   ( pack, toUpper )
+import qualified Data.Text.Lazy             as TL   ( pack )
+import qualified Data.Text.Lazy.Encoding    as TL   ( encodeUtf8 )
+import qualified Data.Unicode.NormalizationInsensitive as NI ( mk )
 import           Test.Framework                     ( defaultMain, testGroup )
 import           Test.Framework.Providers.HUnit     ( testCase )
-import           Test.HUnit                         ( assertEqual )
+import           Test.HUnit                         ( assertBool, assertEqual )
 
 main :: IO ()
 main = defaultMain
-  [ testGroup "ASCII"
-    [ testCase "String"          $ assertEqual "" (CI.mk                    asciiStr)
-                                                  (CI.mk (     map toUpper  asciiStr))
-    , testCase "ByteString"      $ assertEqual "" (CI.mk                    asciiBs)
-                                                  (CI.mk ( BC8.map toUpper  asciiBs))
-    , testCase "Lazy.ByteString" $ assertEqual "" (CI.mk                    asciiLBs)
-                                                  (CI.mk (BLC8.map toUpper  asciiLBs))
-    , testCase "Text"            $ assertEqual "" (CI.mk                    asciiTxt)
-                                                  (CI.mk (       T.toUpper  asciiTxt))
-    , testCase "Lazy.Text"       $ assertEqual "" (CI.mk                    asciiLTxt)
-                                                  (CI.mk (      TL.toUpper  asciiLTxt))
+  [ testGroup "sensitive"
+    [ testCase "String"          $ assertBool "" (nfcStr  /= nfdStr)
+    , testCase "ByteString"      $ assertBool "" (nfcBs   /= nfdBs)
+    , testCase "Lazy.ByteString" $ assertBool "" (nfcLBs  /= nfdLBs)
+    , testCase "Text"            $ assertBool "" (nfcTxt  /= nfdTxt)
+    , testCase "Lazy.Text"       $ assertBool "" (nfcLTxt /= nfdLTxt)
     ]
-  , testGroup "ISO-8859-1"
-    [ testCase "String"          $ assertEqual "" (CI.mk                    iso_8859_1Str)
-                                                  (CI.mk (     map toUpper  iso_8859_1Str))
-    , testCase "ByteString"      $ assertEqual "" (CI.mk                    iso_8859_1Bs)
-                                                  (CI.mk ( BC8.map toUpper' iso_8859_1Bs))
-    , testCase "Lazy.ByteString" $ assertEqual "" (CI.mk                    iso_8859_1LBs)
-                                                  (CI.mk (BLC8.map toUpper' iso_8859_1LBs))
-    , testCase "Text"            $ assertEqual "" (CI.mk                    iso_8859_1Txt)
-                                                  (CI.mk (       T.toUpper  iso_8859_1Txt))
-    , testCase "Lazy.Text"       $ assertEqual "" (CI.mk                    iso_8859_1LTxt)
-                                                  (CI.mk (      TL.toUpper  iso_8859_1LTxt))
+  , testGroup "insensitive"
+    [ testCase "String"          $ assertEqual "" (NI.mk nfcStr)  (NI.mk nfdStr)
+    , testCase "ByteString"      $ assertEqual "" (NI.mk nfcBs)   (NI.mk nfdBs)
+    , testCase "Lazy.ByteString" $ assertEqual "" (NI.mk nfcLBs)  (NI.mk nfdLBs)
+    , testCase "Text"            $ assertEqual "" (NI.mk nfcTxt)  (NI.mk nfdTxt)
+    , testCase "Lazy.Text"       $ assertEqual "" (NI.mk nfcLTxt) (NI.mk nfdLTxt)
+    ]
+   , testGroup "hash"
+    [ testCase "String"          $ assertEqual "" (hash $ NI.mk nfcStr)  (hash $ NI.mk nfdStr)
+    , testCase "ByteString"      $ assertEqual "" (hash $ NI.mk nfcBs)   (hash $ NI.mk nfdBs)
+    , testCase "Lazy.ByteString" $ assertEqual "" (hash $ NI.mk nfcLBs)  (hash $ NI.mk nfdLBs)
+    , testCase "Text"            $ assertEqual "" (hash $ NI.mk nfcTxt)  (hash $ NI.mk nfdTxt)
+    , testCase "Lazy.Text"       $ assertEqual "" (hash $ NI.mk nfcLTxt) (hash $ NI.mk nfdLTxt)
     ]
   ]
 
 
-asciiLTxt :: Lazy.Text
-asciiLTxt = TL.pack asciiStr
+nfcLTxt :: Lazy.Text
+nfcLTxt = TL.pack nfcStr
 
-asciiTxt :: Text
-asciiTxt = T.pack asciiStr
+nfcTxt :: Text
+nfcTxt = T.pack nfcStr
 
-asciiLBs :: Lazy.ByteString
-asciiLBs = BLC8.pack asciiStr
+nfcLBs :: Lazy.ByteString
+nfcLBs = TL.encodeUtf8 nfcLTxt
 
-asciiBs :: ByteString
-asciiBs = BC8.pack asciiStr
+nfcBs :: ByteString
+nfcBs = T.encodeUtf8 nfcTxt
 
-asciiStr :: String
-asciiStr = map chr [0..127]
-
-
-iso_8859_1LTxt :: Lazy.Text
-iso_8859_1LTxt = TL.pack iso_8859_1Str
-
-iso_8859_1Txt :: Text
-iso_8859_1Txt = T.pack iso_8859_1Str
-
-iso_8859_1LBs :: Lazy.ByteString
-iso_8859_1LBs = BLC8.pack iso_8859_1Str
-
-iso_8859_1Bs :: ByteString
-iso_8859_1Bs = BC8.pack iso_8859_1Str
-
-iso_8859_1Str :: String
-iso_8859_1Str = asciiStr ++ map chr [128..255]
+nfcStr :: String
+nfcStr = "C\233sar E. Ch\225vez"
 
 
--- | Upper-casing some characters in ISO 8859-1 move them outside the 0-255 range.
-toUpper' :: Char -> Char
-toUpper' 'µ' = 'µ'       -- toUpper 'µ' (code point: 181) == 'Μ' (code point: 924)
-toUpper' 'ÿ' = 'ÿ'       -- toUpper 'ÿ' (code point: 255) == 'Ÿ' (code point: 376)
-toUpper' c   = toUpper c
+nfdLTxt :: Lazy.Text
+nfdLTxt = TL.pack nfdStr
+
+nfdTxt :: Text
+nfdTxt = T.pack nfdStr
+
+nfdLBs :: Lazy.ByteString
+nfdLBs = TL.encodeUtf8 nfdLTxt
+
+nfdBs :: ByteString
+nfdBs = T.encodeUtf8 nfdTxt
+
+nfdStr :: String
+nfdStr = "Ce\769sar E. Cha\769vez"
