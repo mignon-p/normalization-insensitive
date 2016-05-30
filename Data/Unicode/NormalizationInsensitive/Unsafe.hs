@@ -6,14 +6,14 @@
 
 -----------------------------------------------------------------------------
 -- |
--- Module      :  Data.CaseInsensitive.Unsafe
+-- Module      :  Data.Unicode.NormalizationInsensitive.Unsafe
 -- Copyright   :  (c) 2011-2013 Bas van Dijk
 -- License     :  BSD-style (see the file LICENSE)
 -- Maintainer  :  Bas van Dijk <v.dijk.bas@gmail.com>
 --
--- Provides an unsafe way to create a case insensitive string-like value.
+-- Provides an unsafe way to create a normalization insensitive string-like value.
 --
 -----------------------------------------------------------------------------
 
-module Data.CaseInsensitive.Unsafe   ( unsafeMk ) where
-import Data.CaseInsensitive.Internal ( unsafeMk )
+module Data.Unicode.NormalizationInsensitive.Unsafe   ( unsafeMk ) where
+import Data.Unicode.NormalizationInsensitive.Internal ( unsafeMk )

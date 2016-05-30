@@ -6,7 +6,7 @@
 
 -----------------------------------------------------------------------------
 -- |
--- Module      :  Data.CaseInsensitive
+-- Module      :  Data.Unicode.NormalizationInsensitive
 -- Copyright   :  (c) 2011-2013 Bas van Dijk
 -- License     :  BSD-style (see the file LICENSE)
 -- Maintainer  :  Bas van Dijk <v.dijk.bas@gmail.com>
@@ -14,20 +14,17 @@
 -- This module is intended to be imported qualified. May I suggest:
 --
 -- @
--- import           Data.CaseInsensitive  ( CI )
--- import qualified Data.CaseInsensitive as CI
+-- import           Data.Unicode.NormalizationInsensitive  ( NI )
+-- import qualified Data.Unicode.NormalizationInsensitive as NI
 -- @
---
--- /Note that the FoldCase instance for ByteStrings is only/
--- /guaranteed to be correct for ISO-8859-1 encoded strings!/
 --
 -----------------------------------------------------------------------------
 
-module Data.CaseInsensitive ( CI
+module Data.Unicode.NormalizationInsensitive ( NI
                             , mk
                             , original
-                            , foldedCase
+                            , normalize
                             , map
-                            , FoldCase(foldCase)
+                            , Normalizable(normalize)
                             ) where
-import Data.CaseInsensitive.Internal
+import Data.Unicode.NormalizationInsensitive.Internal

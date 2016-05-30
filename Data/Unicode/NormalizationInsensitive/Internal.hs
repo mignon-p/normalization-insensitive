@@ -6,23 +6,23 @@
 
 -----------------------------------------------------------------------------
 -- |
--- Module      :  Data.CaseInsensitive.Internal
+-- Module      :  Data.Unicode.NormalizationInsensitive.Internal
 -- Copyright   :  (c) 2011-2013 Bas van Dijk
 -- License     :  BSD-style (see the file LICENSE)
 -- Maintainer  :  Bas van Dijk <v.dijk.bas@gmail.com>
 --
--- Internal module which exports the 'CI' type, constructor,
--- associated instances and the 'FoldCase' class and instances.
+-- Internal module which exports the 'NI' type, constructor,
+-- associated instances and the 'Normalizable' class and instances.
 --
 -----------------------------------------------------------------------------
 
-module Data.CaseInsensitive.Internal ( CI
+module Data.Unicode.NormalizationInsensitive.Internal ( NI
                                      , mk
                                      , unsafeMk
                                      , original
-                                     , foldedCase
+                                     , normalized
                                      , map
-                                     , FoldCase(foldCase)
+                                     , Normalizable(normalize)
                                      ) where
 
 --------------------------------------------------------------------------------
@@ -67,103 +67,97 @@ import Data.Hashable ( Hashable, hashWithSalt )
 
 
 --------------------------------------------------------------------------------
--- Case Insensitive Strings
+-- Normalization Insensitive Strings
 --------------------------------------------------------------------------------
 
-{-| A @CI s@ provides /C/ase /I/nsensitive comparison for the string-like type
+{-| A @NI s@ provides /C/ase /I/nsensitive comparison for the string-like type
 @s@ (for example: 'String', 'T.Text', 'B.ByteString', etc.).
 
-Note that @CI s@ has an instance for 'IsString' which together with the
-@OverloadedStrings@ language extension allows you to write case insensitive
+Note that @NI s@ has an instance for 'IsString' which together with the
+@OverloadedStrings@ language extension allows you to write normalization insensitive
 string literals as in:
 
 @
-\> (\"Content-Type\" :: 'CI' 'T.Text') == (\"CONTENT-TYPE\" :: 'CI' 'T.Text')
+\> (\"Content-Type\" :: 'NI' 'T.Text') == (\"CONTENT-TYPE\" :: 'NI' 'T.Text')
 True
 @
 
 -}
-data CI s = CI { original   :: !s -- ^ Retrieve the original string-like value.
-               , foldedCase :: !s -- ^ Retrieve the case folded string-like value.
-                                  --   (Also see 'foldCase').
+data NI s = NI { original   :: !s -- ^ Retrieve the original string-like value.
+               , normalized :: !s -- ^ Retrieve the normalized string-like value.
+                                  --   (Also see 'normalize').
                }
           deriving (Data, Typeable)
 
--- | Make the given string-like value case insensitive.
-mk :: FoldCase s => s -> CI s
-mk s = CI s (foldCase s)
+-- | Make the given string-like value normalization insensitive.
+mk :: Normalizable s => s -> NI s
+mk s = NI s (normalize s)
 
--- | Constructs a 'CI' from an already case folded string-like
+-- | Constructs a 'NI' from an already normalized string-like
 -- value. The given string is used both as the 'original' as well as
--- the 'foldedCase'.
+-- the 'normalized'.
 --
 -- This function is unsafe since the compiler can't guarantee that the
--- provided string is case folded.
-unsafeMk :: FoldCase s => s -> CI s
-unsafeMk s = CI s s
+-- provided string is normalized.
+unsafeMk :: Normalizable s => s -> NI s
+unsafeMk s = NI s s
 
--- | Transform the original string-like value but keep it case insensitive.
-map :: FoldCase s2 => (s1 -> s2) -> (CI s1 -> CI s2)
+-- | Transform the original string-like value but keep it normalized.
+map :: Normalizable s2 => (s1 -> s2) -> (NI s1 -> NI s2)
 map f = mk . f . original
 
-instance (IsString s, FoldCase s) => IsString (CI s) where
+instance (IsString s, Normalizable s) => IsString (NI s) where
     fromString = mk . fromString
 
-instance Monoid s => Monoid (CI s) where
-    mempty = CI mempty mempty
-    CI o1 l1 `mappend` CI o2 l2 = CI (o1 `mappend` o2) (l1 `mappend` l2)
+instance Monoid s => Monoid (NI s) where
+    mempty = NI mempty mempty
+    NI o1 l1 `mappend` NI o2 l2 = NI (o1 `mappend` o2) (l1 `mappend` l2)
 
-instance Eq s => Eq (CI s) where
-    (==) = (==) `on` foldedCase
+instance Eq s => Eq (NI s) where
+    (==) = (==) `on` normalized
 
-instance Ord s => Ord (CI s) where
-    compare = compare `on` foldedCase
+instance Ord s => Ord (NI s) where
+    compare = compare `on` normalized
 
-instance (Read s, FoldCase s) => Read (CI s) where
+instance (Read s, Normalizable s) => Read (NI s) where
     readPrec = fmap mk readPrec
 
-instance Show s => Show (CI s) where
+instance Show s => Show (NI s) where
     showsPrec prec = showsPrec prec . original
 
-instance Hashable s => Hashable (CI s) where
-    hashWithSalt salt = hashWithSalt salt . foldedCase
+instance Hashable s => Hashable (NI s) where
+    hashWithSalt salt = hashWithSalt salt . normalized
 
-instance NFData s => NFData (CI s) where
-    rnf (CI o f) = o `deepseq` f `deepseq` ()
+instance NFData s => NFData (NI s) where
+    rnf (NI o f) = o `deepseq` f `deepseq` ()
 
 --------------------------------------------------------------------------------
--- Folding (lowering) cases
+-- Normalization
 --------------------------------------------------------------------------------
 
--- | Class of string-like types that support folding cases.
---
--- /Note/: In some languages, case conversion is a locale- and context-dependent
--- operation. The @foldCase@ method is /not/ intended to be locale sensitive.
--- Programs that require locale sensitivity should use appropriate versions of
--- the case mapping functions from the @text-icu@ package:
--- <http://hackage.haskell.org/package/text-icu>
-class FoldCase s where
-    foldCase :: s -> s
+-- | Class of string-like types that support normalization.
+class Normalizable s where
+    normalize :: s -> s
 
-    foldCaseList :: [s] -> [s]
-    foldCaseList = L.map foldCase
+    normalizeList :: [s] -> [s]
+    normalizeList = L.map normalize
 
-instance FoldCase a => FoldCase [a] where
-    foldCase = foldCaseList
+instance Normalizable a => Normalizable [a] where
+    normalize = normalizeList
 
--- | Note that @foldCase@ on @'B.ByteString's@ is only guaranteed to be correct for ISO-8859-1 encoded strings!
-instance FoldCase B.ByteString where foldCase = B.map toLower8
+-- | Note that @normalize@ on @'B.ByteString's@ is only guaranteed to be correct for ISO-8859-1 encoded strings!
+instance Normalizable B.ByteString where normalize = B.map toLower8
 
--- | Note that @foldCase@ on @'BL.ByteString's@ is only guaranteed to be correct for ISO-8859-1 encoded strings!
-instance FoldCase BL.ByteString where foldCase = BL.map toLower8
+-- | Note that @normalize@ on @'BL.ByteString's@ is only guaranteed to be correct for ISO-8859-1 encoded strings!
+instance Normalizable BL.ByteString where normalize = BL.map toLower8
 
-instance FoldCase Char where
-    foldCase     = toLower
-    foldCaseList = TL.unpack . TL.toCaseFold . TL.pack
+instance Normalizable Char where
+    normalize     = toLower
+    normalizeList = TL.unpack . TL.toCaseFold . TL.pack
 
-instance FoldCase T.Text  where foldCase = T.toCaseFold
-instance FoldCase TL.Text where foldCase = TL.toCaseFold
-instance FoldCase (CI s)  where foldCase (CI _ l) = CI l l
+instance Normalizable T.Text  where normalize = T.toCaseFold
+instance Normalizable TL.Text where normalize = TL.toCaseFold
+instance Normalizable (NI s)  where normalize (NI _ l) = NI l l
 
 {-# INLINE toLower8 #-}
 toLower8 :: Word8 -> Word8
@@ -177,10 +171,10 @@ toLower8 w
 -- Rewrite RULES
 --------------------------------------------------------------------------------
 
-{-# RULES "foldCase/ByteString" foldCase = foldCaseBS #-}
+{-# RULES "normalize/ByteString" normalize = normalizeBS #-}
 
-foldCaseBS :: B.ByteString -> B.ByteString
-foldCaseBS bs = B.map toLower8' bs
+normalizeBS :: B.ByteString -> B.ByteString
+normalizeBS bs = B.map toLower8' bs
     where
       toLower8' :: Word8 -> Word8
       toLower8' w
