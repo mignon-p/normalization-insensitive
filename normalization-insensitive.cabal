@@ -1,19 +1,21 @@
 name:          normalization-insensitive
-version:       1.2.0.5
+version:       2.0
 cabal-version: >=1.8
 build-type:    Simple
 license:       BSD3
 license-file:  LICENSE
 copyright:     2011 Bas van Dijk
+               2016 Patrick Pelletier
 author:        Bas van Dijk
-maintainer:    Bas van Dijk <v.dijk.bas@gmail.com>
-homepage:      https://github.com/basvandijk/normalization-insensitive
-bug-reports:   https://github.com/basvandijk/normalization-insensitive/issues
+               Patrick Pelletier
+maintainer:    Patrick Pelletier <code@funwithsoftware.org>
+homepage:      https://github.com/ppelleti/normalization-insensitive
+bug-reports:   https://github.com/ppelleti/normalization-insensitive/issues
 category:      Data, Text
 synopsis:      Normalization insensitive string comparison
-description:   The module @Data.Unicode.NormalizationInsensitive@ provides the 'NI' type
-               constructor which can be parameterised by a string-like
-               type like: 'String', 'ByteString', 'Text',
+description:   The module @Data.Unicode.NormalizationInsensitive@ provides
+               the 'NI' type constructor which can be parameterized by a
+               string-like type like: 'String', 'ByteString', 'Text',
                etc.. Comparisons of values of the resulting type will be
                insensitive to normalization.
 tested-with:
@@ -29,7 +31,7 @@ extra-source-files: README.markdown CHANGELOG pg2189.txt
 
 source-repository head
   Type:     git
-  Location: git://github.com/basvandijk/normalization-insensitive.git
+  Location: https://github.com/ppelleti/normalization-insensitive.git
 
 Library
   ghc-options: -Wall
