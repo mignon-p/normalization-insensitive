@@ -67,6 +67,7 @@ benchmark bench-normalization-insensitive
   type:           exitcode-stdio-1.0
   main-is:        bench.hs
   hs-source-dirs: bench
+  other-modules:  NoClass
 
   ghc-options:    -Wall -O2
 
