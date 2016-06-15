@@ -65,7 +65,7 @@ import Data.Hashable ( Hashable, hashWithSalt )
 -- from unicode-transforms:
 import qualified Data.ByteString.UTF8.Normalize as B ( normalize )
 import qualified Data.Text.Normalize            as T ( normalize )
-import Data.Unicode.Normalize                   ( NormalizationMode(NFKD) )
+import Data.Unicode.Normalize                   ( NormalizationMode(NFC) )
 
 --------------------------------------------------------------------------------
 -- Normalization Insensitive Strings
@@ -136,7 +136,7 @@ instance NFData s => NFData (NI s) where
 -- Normalization
 --------------------------------------------------------------------------------
 
-mode = NFKD
+mode = NFC
 
 -- | Class of string-like types that support normalization.
 class Normalizable s where
