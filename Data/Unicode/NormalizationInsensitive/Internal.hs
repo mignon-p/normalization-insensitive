@@ -65,7 +65,7 @@ import Data.Hashable ( Hashable, hashWithSalt )
 -- from unicode-transforms:
 import qualified Data.ByteString.UTF8.Normalize as B ( normalize )
 import qualified Data.Text.Normalize            as T ( normalize )
-import Data.Unicode.Normalize                   ( NormalizationMode(NFC) )
+import Data.Unicode.Types                       ( NormalizationMode(NFC) )
 
 --------------------------------------------------------------------------------
 -- Normalization Insensitive Strings
