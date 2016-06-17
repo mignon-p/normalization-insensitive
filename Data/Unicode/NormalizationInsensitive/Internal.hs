@@ -110,9 +110,14 @@ map f = mk . f . original
 instance (IsString s, Normalizable s) => IsString (NI s) where
     fromString = mk . fromString
 
-instance Monoid s => Monoid (NI s) where
+instance (Monoid s, Normalizable s) => Monoid (NI s) where
     mempty = NI mempty mempty
-    NI o1 l1 `mappend` NI o2 l2 = NI (o1 `mappend` o2) (l1 `mappend` l2)
+    -- The result of concatenating two normalized strings is not
+    -- necessarily normalized.  Therefore, concatenate the original
+    -- strings and re-normalize.
+    -- https://github.com/ppelleti/normalization-insensitive/issues/1
+    NI o1 _ `mappend` NI o2 _ = NI o12 (normalize o12)
+      where o12 = o1 `mappend` o2
 
 instance Eq s => Eq (NI s) where
     (==) = (==) `on` normalized
