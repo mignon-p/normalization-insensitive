@@ -22,10 +22,6 @@ description:   The module @Data.Unicode.NormalizationInsensitive@ provides
                This is very similar in spirit to the @case-insensitive@
                package, and is in fact based on the same code.
 tested-with:
-  GHC==7.0.4,
-  GHC==7.2.2
-  GHC==7.4.2,
-  GHC==7.6.3,
   GHC==7.8.4,
   GHC==7.10.3,
   GHC==8.0.1
@@ -38,13 +34,14 @@ source-repository head
 
 Library
   ghc-options: -Wall
-  build-depends: base       >= 3   && < 4.10
+  build-depends: base       >= 4.7 && < 5
                , bytestring >= 0.9 && < 0.11
                , text       >= 0.3 && < 1.3
                , deepseq    >= 1.1 && < 1.5
                , hashable   >= 1.0 && < 1.3
-               , unicode-transforms
-  exposed-modules: Data.Unicode.NormalizationInsensitive, Data.Unicode.NormalizationInsensitive.Unsafe
+               , unicode-transforms >= 0.1.0.1 && < 1.2
+  exposed-modules: Data.Unicode.NormalizationInsensitive
+                 , Data.Unicode.NormalizationInsensitive.Unsafe
   other-modules: Data.Unicode.NormalizationInsensitive.Internal
 
 test-suite test-normalization-insensitive
@@ -53,7 +50,7 @@ test-suite test-normalization-insensitive
   hs-source-dirs: test
 
   build-depends: normalization-insensitive
-               , base                 >= 3     && < 4.10
+               , base                 >= 4.7   && < 5
                , bytestring           >= 0.9   && < 0.11
                , text                 >= 0.3   && < 1.3
                , hashable             >= 1.0   && < 1.3
@@ -72,7 +69,7 @@ benchmark bench-normalization-insensitive
   ghc-options:    -Wall -O2
 
   build-depends: normalization-insensitive
-               , base                 >= 3     && < 4.10
+               , base                 >= 4.7   && < 5
                , bytestring           >= 0.9   && < 0.11
                , criterion            >= 0.6.1 && < 1.2
                , deepseq              >= 1.1   && < 1.5
