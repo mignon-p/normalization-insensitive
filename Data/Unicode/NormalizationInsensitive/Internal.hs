@@ -1,8 +1,4 @@
-{-# LANGUAGE CPP, DeriveDataTypeable, TypeSynonymInstances, FlexibleInstances #-}
-
-#if __GLASGOW_HASKELL__ >= 704
-{-# LANGUAGE Unsafe #-}
-#endif
+{-# LANGUAGE DeriveDataTypeable, TypeSynonymInstances, FlexibleInstances, Unsafe #-}
 
 -----------------------------------------------------------------------------
 -- |
@@ -42,11 +38,6 @@ import Data.Typeable ( Typeable )
 import Prelude       ( String, (.), fmap, (&&), (+), (<=), otherwise )
 import Text.Read     ( Read, readPrec )
 import Text.Show     ( Show, showsPrec )
-
-#if __GLASGOW_HASKELL__ < 700
-import Control.Monad ( (>>) )
-import Prelude       ( fromInteger )
-#endif
 
 -- from bytestring:
 import qualified Data.ByteString      as B  ( ByteString )
