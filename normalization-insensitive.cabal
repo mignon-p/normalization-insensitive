@@ -4,9 +4,9 @@ cabal-version: >=1.8
 build-type:    Simple
 license:       BSD3
 license-file:  LICENSE
-copyright:     2011 Bas van Dijk
+copyright:     2011 Bas van Dijk,
                2016 Patrick Pelletier
-author:        Bas van Dijk
+author:        Bas van Dijk,
                Patrick Pelletier
 maintainer:    Patrick Pelletier <code@funwithsoftware.org>
 homepage:      https://github.com/ppelleti/normalization-insensitive
