@@ -11,7 +11,7 @@ author:        Bas van Dijk
 maintainer:    Patrick Pelletier <code@funwithsoftware.org>
 homepage:      https://github.com/ppelleti/normalization-insensitive
 bug-reports:   https://github.com/ppelleti/normalization-insensitive/issues
-category:      Data, Text
+category:      Data, Text, Unicode
 synopsis:      Normalization insensitive string comparison
 description:   The module @Data.Unicode.NormalizationInsensitive@ provides
                the 'NI' type constructor which can be parameterized by a
