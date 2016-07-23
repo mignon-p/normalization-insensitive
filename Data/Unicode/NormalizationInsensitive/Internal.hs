@@ -90,7 +90,7 @@ mk s = NI s (normalize s)
 --
 -- This function is unsafe since the compiler can't guarantee that the
 -- provided string is normalized.
-unsafeMk :: Normalizable s => s -> NI s
+unsafeMk :: s -> NI s
 unsafeMk s = NI s s
 
 -- | Transform the original string-like value but keep it normalized.
