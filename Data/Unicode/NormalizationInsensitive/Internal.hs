@@ -70,7 +70,7 @@ Note that @NI s@ has an instance for 'IsString' which together with the
 string literals as in:
 
 @
-\> (\"Content-Type\" :: 'NI' 'T.Text') == (\"CONTENT-TYPE\" :: 'NI' 'T.Text')
+\> ("\12399\12441" :: NI Text) == ("\12400" :: NI Text)
 True
 @
 
