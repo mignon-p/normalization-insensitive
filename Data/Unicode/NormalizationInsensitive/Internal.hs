@@ -27,7 +27,6 @@ module Data.Unicode.NormalizationInsensitive.Internal ( NI
 --------------------------------------------------------------------------------
 
 -- from base:
-import Data.Bool     ( (||) )
 import Data.Eq       ( Eq, (==) )
 import Data.Function ( on )
 import Data.Monoid   ( Monoid, mempty, mappend )
@@ -35,7 +34,7 @@ import Data.Ord      ( Ord, compare )
 import Data.String   ( IsString, fromString )
 import Data.Data     ( Data )
 import Data.Typeable ( Typeable )
-import Prelude       ( String, (.), fmap, (&&), (+), (<=), otherwise )
+import Prelude       ( String, (.), fmap )
 import Text.Read     ( Read, readPrec )
 import Text.Show     ( Show, showsPrec )
 
@@ -132,6 +131,7 @@ instance NFData s => NFData (NI s) where
 -- Normalization
 --------------------------------------------------------------------------------
 
+mode :: NormalizationMode
 mode = NFC
 
 -- | Class of string-like types that support normalization.

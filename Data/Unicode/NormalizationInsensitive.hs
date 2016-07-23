@@ -20,7 +20,6 @@
 module Data.Unicode.NormalizationInsensitive ( NI
                             , mk
                             , original
-                            , normalize
                             , map
                             , Normalizable(normalize)
                             ) where
