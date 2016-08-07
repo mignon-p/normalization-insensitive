@@ -69,7 +69,7 @@ Note that @NI s@ has an instance for 'IsString' which together with the
 string literals as in:
 
 @
-\> ("\12399\12441" :: NI Text) == ("\12400" :: NI Text)
+\> ("\\12399\\12441" :: NI Text) == ("\\12400" :: NI Text)
 True
 @
 
