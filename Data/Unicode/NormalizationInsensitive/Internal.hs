@@ -84,7 +84,7 @@ data NI s = NI { original   :: !s -- ^ Retrieve the original string-like value.
 mk :: Normalizable s => s -> NI s
 mk s = NI s (normalize s)
 
--- | Constructs a 'NI' from an already normalized string-like
+-- | Constructs an 'NI' from an already normalized string-like
 -- value. The given string is used both as the 'original' as well as
 -- the 'normalized'.
 --
