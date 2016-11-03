@@ -43,8 +43,10 @@ import qualified Data.ByteString      as B  ( ByteString )
 import qualified Data.ByteString.Lazy as BL ( ByteString, fromStrict, toStrict )
 
 -- from text:
-import qualified Data.Text      as T  ( Text, pack, unpack )
-import qualified Data.Text.Lazy as TL ( Text, fromStrict, toStrict )
+import qualified Data.Text                as T  ( Text, pack, unpack )
+import qualified Data.Text.Encoding       as T  ( decodeUtf8With, encodeUtf8 )
+import qualified Data.Text.Encoding.Error as T  ( lenientDecode )
+import qualified Data.Text.Lazy           as TL ( Text, fromStrict, toStrict )
 
 -- from deepseq:
 import Control.DeepSeq ( NFData, rnf, deepseq )
@@ -53,7 +55,6 @@ import Control.DeepSeq ( NFData, rnf, deepseq )
 import Data.Hashable ( Hashable, hashWithSalt )
 
 -- from unicode-transforms:
-import qualified Data.ByteString.UTF8.Normalize as B ( normalize )
 import qualified Data.Text.Normalize            as T ( normalize )
 import Data.Unicode.Types                       ( NormalizationMode(NFC) )
 
@@ -140,11 +141,11 @@ class Normalizable s where
 
 -- | Note that @normalize@ on @'B.ByteString's@ assumes UTF-8 encoded strings!
 instance Normalizable B.ByteString where
-    normalize = B.normalize mode
+    normalize = T.encodeUtf8 . normalize . T.decodeUtf8With T.lenientDecode
 
 -- | Note that @normalize@ on @'BL.ByteString's@ assumes UTF-8 encoded strings!
 instance Normalizable BL.ByteString where
-    normalize = BL.fromStrict . B.normalize mode . BL.toStrict
+    normalize = BL.fromStrict . normalize . BL.toStrict
 
 instance Normalizable String where
     normalize = T.unpack . T.normalize mode . T.pack
