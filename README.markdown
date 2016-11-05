@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/ppelleti/normalization-insensitive.svg?branch=master)](https://travis-ci.org/ppelleti/normalization-insensitive)
+[![Build status](https://ci.appveyor.com/api/projects/status/0qhwhc1cfsphf263/branch/master?svg=true)](https://ci.appveyor.com/project/ppelleti/normalization-insensitive/branch/master)
 
 The module `Data.Unicode.NormalizationInsensitive` provides the `NI`
 type constructor which can be parameterized by a string-like type like:
