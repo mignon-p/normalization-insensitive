@@ -5,12 +5,13 @@ environment:
   global:
     BUILD: "stack"
     GHC_OPTIONS: "-O0 -Werror"
+    DISABLE_BENCH: "y"
 
     STACK_ROOT: "c:\\sr"
     LOCAL_BIN: "%APPDATA%\\local\\bin"
     PATH: "%PATH%;%APPDATA%\\local\\bin"
     CABAL_REINIT_CONFIG: "y"
-    PACKAGE_TEST_VER: "23c3e50a8d55804d60435c946192990ffb856336"
+    PACKAGE_TEST_VER: "f47abfb22fbdfb41668a2d3032353b06c87636f2"
 
 cache:
   - "%STACK_ROOT%" # stack root
