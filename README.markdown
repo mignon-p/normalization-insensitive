@@ -13,7 +13,8 @@ type will be insensitive to normalization.
 This is very similar in spirit to the [`case-insensitive`][1] package, and is
 in fact based on the same code.
 
-This package uses NFC internally, although that shouldn't matter to
+This package uses [NFC][2] internally, although that shouldn't matter to
 you, unless you use `unsafeMk`.
 
 [1]: https://hackage.haskell.org/package/case-insensitive
+[2]: https://en.wikipedia.org/wiki/Unicode_equivalence#Normal_forms
