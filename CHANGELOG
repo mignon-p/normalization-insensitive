@@ -1,3 +1,8 @@
+2.0.1
+
+* Expose 'normalized'
+
+
 2.0.0.1
 
 * Avoid using Data.ByteString.UTF8.Normalize, which was deprecated in
