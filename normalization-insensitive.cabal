@@ -18,7 +18,7 @@ description:   The module @Data.Unicode.NormalizationInsensitive@ provides
                string-like type like: 'String', 'ByteString', 'Text',
                etc.. Comparisons of values of the resulting type will be
                insensitive to normalization.
-
+               .
                This is very similar in spirit to the @case-insensitive@
                package, and is in fact based on the same code.
 tested-with:
