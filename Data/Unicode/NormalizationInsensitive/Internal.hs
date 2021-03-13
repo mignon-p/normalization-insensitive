@@ -37,6 +37,7 @@ import Data.Typeable ( Typeable )
 import Prelude       ( String, (.), fmap )
 import Text.Read     ( Read, readPrec )
 import Text.Show     ( Show, showsPrec )
+import Data.Semigroup ( Semigroup, (<>) )
 
 -- from bytestring:
 import qualified Data.ByteString      as B  ( ByteString )
@@ -100,6 +101,10 @@ map f = mk . f . original
 
 instance (IsString s, Normalizable s) => IsString (NI s) where
     fromString = mk . fromString
+
+instance (Semigroup s, Normalizable s) => Semigroup (NI s) where
+    NI o1 _ <> NI o2 _ = NI o12 (normalize o12)
+      where o12 = o1 <> o2
 
 instance (Monoid s, Normalizable s) => Monoid (NI s) where
     mempty = NI mempty mempty
