@@ -1,6 +1,6 @@
 name:          normalization-insensitive
 version:       2.0.2
-cabal-version: >=1.8
+cabal-version: >=1.10
 build-type:    Simple
 license:       BSD3
 license-file:  LICENSE
@@ -47,6 +47,7 @@ Library
   exposed-modules: Data.Unicode.NormalizationInsensitive
                  , Data.Unicode.NormalizationInsensitive.Unsafe
   other-modules: Data.Unicode.NormalizationInsensitive.Internal
+  default-language:    Haskell2010
 
 test-suite test-normalization-insensitive
   type:           exitcode-stdio-1.0
@@ -63,6 +64,7 @@ test-suite test-normalization-insensitive
                , test-framework-hunit >= 0.2.4 && < 0.4
 
   ghc-options: -Wall
+  default-language:    Haskell2010
 
 benchmark bench-normalization-insensitive
   type:           exitcode-stdio-1.0
@@ -77,3 +79,4 @@ benchmark bench-normalization-insensitive
                , bytestring           >= 0.9   && < 0.12
                , criterion            >= 0.6.1 && < 1.6
                , deepseq              >= 1.1   && < 1.5
+  default-language:    Haskell2010
