@@ -16,7 +16,8 @@ extra-deps:
 - hashable-1.4.0.0
 - text-1.2.4.1
 - time-1.8.0.4
-- unicode-transforms-0.3.7.1
+- unicode-data-0.2.0
+- unicode-transforms-0.4.0
 - Win32-2.11.1.0
 
 # Override default flag values for local packages and extra-deps
